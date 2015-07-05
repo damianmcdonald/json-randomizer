@@ -1,3 +1,5 @@
 = json-randomizer
 
+image:https://travis-ci.org/damianmcdonald/json-randomizer.svg?branch=master["Build Status", link="https://travis-ci.org/damianmcdonald/json-randomizer"]
+
 json-randomizer is an under construction project that when finished will provide a Trait that can be mixed in to support the creation of Json content with randomly generated data. An additional Trait will be provided to allow the randomly generated Json content to be fired at RESTful web services for testing many, unique simultaneous requests.
