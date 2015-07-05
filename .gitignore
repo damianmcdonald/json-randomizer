@@ -1,0 +1,9 @@
+# The following folders and files should not be tracked by git for this project
+.idea/
+project/target/
+project/project/
+src/main/java/
+src/main/scala-2.11/
+src/test/java/
+src/test/scala-2.11/
+target/
