@@ -1,0 +1,13 @@
+# See http://about.travis-ci.org/docs/user/build-configuration/
+language: scala
+scala:
+   - 2.11.6
+branches:
+  only:
+    - master
+notifications:
+  email:
+    recipients:
+      - damian.mcdonald1979@gmail.com
+jdk:
+  - oraclejdk8
