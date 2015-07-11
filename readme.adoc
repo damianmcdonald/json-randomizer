@@ -1,5 +1,358 @@
 = json-randomizer
 
-image:https://travis-ci.org/damianmcdonald/json-randomizer.svg?branch=master["Build Status", link="https://travis-ci.org/damianmcdonald/json-randomizer"]
+`json-randomizer` is a http://www.scala-lang.org/[Scala] library that generates random values for structured JSON.
 
-json-randomizer is an under construction project that when finished will provide a Trait that can be mixed in to support the creation of Json content with randomly generated data. An additional Trait will be provided to allow the randomly generated Json content to be fired at RESTful web services for testing many, unique simultaneous requests.
+It is intended to be used to performance and load test JSON web services. In a few shorts steps you can define your JSON structure and then fire thousands of unique JSON requests at your API.
+
+`json-randomizer` can generate random values for the following JSON data types:
+
+* Number - corresponding to scala.Int, scala.Long or scala.Double
+* String
+* Boolean
+* Array
+* Object
+* null
+
+Default random value generation strategies are provided for all types (except Object, a user defined construct, and null). In cases where custom value generation is required, such as a random string constrained to a finite list of status values, custom strategies can be provided.
+
+The library was built using the following toolchain:
+
+* http://www.oracle.com/technetwork/java/javase/downloads/index.html[Java Oracle JDK 1.8]
+* http://www.scala-lang.org/download/all.html[Scala 2.11.6]
+* http://www.scala-sbt.org/download.html[SBT 0.13.8]
+
+The library has also been built against the OpenJDK but is less thoroughly tested so in general your mileage may vary if you attempt to use the library with versions different than the ones specified above.
+
+== Adding the library
+
+The first step is to add `json-randomizer` to you project.
+
+=== Maven dependency
+
+	// to be added
+	
+=== SBT dependency
+
+	// to be added
+	
+=== Jar file
+
+	// to be added
+
+== Usage
+
+Begin by mixing in the `JsonApiRequestor` trait. This also includes the `JsonRandomizer` trait and will allow you to both generate random values for your JSON structures and test them against your JSON web services.
+
+----
+import com.github.damianmcdonald.jsonrandomizer.JsonApiRequestor
+import com.github.damianmcdonald.jsonrandomizer.JsonDouble
+import com.github.damianmcdonald.jsonrandomizer.JsonInt
+import com.github.damianmcdonald.jsonrandomizer.JsonRandomizer
+import com.github.damianmcdonald.jsonrandomizer.JsonString
+
+object MyJsonRequestRunner extends Application with JsonApiRequestor {
+  
+}
+----
+
+The next step is to define your JSON structure.
+
+To put this is in a more real-world context, let's assume that you want to generate a randomized version of the JSON structure below:
+
+----
+{
+    "item:id": "X-Wing",    // String data type
+    "in_stock": true,       // Boolean data type
+    "price": 4567.31,       // Double data type
+    "quantity": 23          // Int data type
+}
+----
+
+We can create the example above as follows:
+
+----
+val jsonStructure = Map(
+  "item_id" -> JsonString(10),
+  "in_stock" -> JsonBoolean(),
+  "price" -> JsonDouble(100, 1000, 2),
+  "quantity" -> JsonInt(5, 25)
+)
+----
+
+Let's examine what is going on.
+
+The JSON structure is defined in a Map that contains a key-value pairing of `String` -> `JsonDataType`.
+
+The `String` values are the id's of your JSON.
+
+The `JsonDataType` will be a sub type that represents the type of JSON data that you wish to randomize.
+
+----
+// Random String with a length of 10
+JsonString(10) 
+
+// Random Boolean        
+JsonBoolean()
+
+// Random Number of type Int between range 25 to 5000        
+JsonInt(25,5000)
+
+// Random Number of type Long between range 542525 to 635235323543223L            
+JsonLong(542525,635235323543223L)
+
+// Random Number of type Double between 150 to 10000 to 4 decimal places
+JsonDouble(150, 10000, 4)
+
+// Random Null
+JsonNull()            
+
+// Array containing 15 elements of one of the JsonDataTypes
+JsonArray(JsonString(8), 15)
+
+// JSON custom object containing the types described above 
+JsonObject(Map(              
+  "stringVal" -> JsonString(10), 
+  "booleanVal" -> JsonBoolean(), 
+  "intVal" -> JsonInt(25,5000))
+)
+----
+
+Now that the JSON structure is defined, a web service can be tested as follows:
+
+----
+import com.github.damianmcdonald.jsonrandomizer.JsonApiRequestor
+import com.github.damianmcdonald.jsonrandomizer.JsonBoolean
+import com.github.damianmcdonald.jsonrandomizer.JsonDouble
+import com.github.damianmcdonald.jsonrandomizer.JsonInt
+import com.github.damianmcdonald.jsonrandomizer.JsonRandomizer
+import com.github.damianmcdonald.jsonrandomizer.JsonString
+
+object MyJsonRequestRunner extends Application with JsonApiRequestor {
+  
+  val jsonStructure = Map(
+    "item_id" -> JsonString(10),
+    "in_stock" -> JsonBoolean(),
+    "price" -> JsonDouble(100, 1000, 2),
+    "quantity" -> JsonInt(5, 25)
+  )
+
+  // this will make 50 unique requests to the defined web service using the Post http method
+  fireAndForgetResponse(Post("http://mywebservice/apiroute"), 50, jsonStructure)
+  
+  // this will make 50 unique requests to the defined web service using the Put http method
+  // additionally, this method will evaluate each response from the web service using a 
+  // default response evaluator which checks that the http response status code == 200 OK
+  fireAndEvaluateResponse(Put("http://mywebservice/apiroute"), 50, jsonStructure)
+  
+}
+----
+
+== Advanced usage
+
+For certain scenarios, the default usage of `json-randomizer` will not be sufficient.
+
+In most cases you will need to:
+
+* generate JSON values according to a custom strategy
+* evaluate web service response according to a custom strategy
+
+The following JsonDataTypes support a custom generation strategy
+
+[cols="2,2,2a", options="header"]
+|===
+|JsonDataType |Function signature | Example
+
+|JsonString
+|(Int) => String
+|----
+(length: Int) => {
+  val x = Random.alphanumeric
+  x take max mkString ("")
+}
+----
+|JsonBoolean
+|() => Boolean
+|
+----
+() => Boolean = Random.nextBoolean
+----
+|JsonInt 
+|(Int, Int) => Int
+|----
+(x: Int, y: Int) => {
+  Random.nextInt((y - x) + 1) + x
+}
+----
+|JsonLong 
+|(Long, Long) => Long
+|
+----
+(x: Long, y: Long) => {
+  (x + (Random.nextDouble() * (y - x))).toLong
+}
+----
+|JsonDouble 
+|(Int, Int, Int) => Double
+|
+----
+(x: Int, y: Int, z: Int) => {
+  val double = (x + (y - x)) * Random.nextDouble
+  BigDecimal(double).setScale(z, BigDecimal.RoundingMode.CEILING).toDouble
+}
+----
+|===
+
+In order to describe how `json-randomizer` can be used to support custom scenarios, we will examine how it was used to test https://github.com/damianmcdonald/currencytrade-spray[currencytrade-spray].
+
+The full test class can be viewed at *TODO:* Add link to JsonApiRequestorTest
+
+The JSON structured required:
+
+----
+{
+    "userId": "134256",
+    "currencyFrom": "EUR",
+    "currencyTo": "GBP",
+    "amountSell": 1000,
+    "amountBuy": 747.1,
+    "rate": 0.7471,
+    "timePlaced": "24-JAN-15 10:27:44",
+    "originatingCountry": "FR"
+}
+----
+
+The JSON fields, `currencyForm`, `currencyTo`, `timePlaced` and `originatingCountry` require constrained values.
+
+* `currencyForm` and `currencyTo` require a valid 3 digit currency code
+* `timePlaced` requires a datetime String using pattern: dd-MMM-yy HH:mm:ss
+* `originatingCountry` requires a 2 digit country code
+
+This JSON structure was defined as follows:
+
+----
+// define a custom generation strategy for the currencyFrom field
+val f1 = (max: Int) => {
+  import scala.util.Random
+  val xs = List("EUR", "AUD", "ARS", "BRC", "CNY", "GBP", "HKD", "INR", "KWD", "NOK")
+  val i = Random.nextInt((xs.length - 1 - 0) + 1) + 0
+  xs(i)
+}
+
+// define a custom generation strategy for the currencyTo field
+val f2 = (max: Int) => {
+  import scala.util.Random
+  val xs = List("USD", "NZD", "CAD", "RUB", "SGD", "ZAR", "CHF", "TRL", "AED", "MXP")
+  val i = Random.nextInt((xs.length - 1 - 0) + 1) + 0
+  xs(i)
+}
+
+// define a custom generation strategy for the originatingCountry field
+val f3 = (max: Int) => {
+  import scala.util.Random
+  val xs = List("US", "NZ", "CA", "RU", "SG", "ZA", "CH", "TR", "AE", "MX", 
+                "ES", "AU", "AR", "BR", "CN", "HKD", "IN", "KW", "NO")
+  val i = Random.nextInt((xs.length - 1 - 0) + 1) + 0
+  xs(i)
+}
+
+// define a custom generation strategy for the timePlaced field
+val f4 = (max: Int) => {
+  import scala.util.Random
+  val xs = List("24-JAN-15 10:27:44","12-FEB-15 18:55:44","13-MAR-15 08:12:44",
+                "05-APR-15 09:27:44","15-MAY-15 11:27:44","18-JUN-15 12:27:44",
+                "27-JUL-15 13:27:44","22-AUG-15 14:27:44","30-SEP-15 15:27:44",
+                "08-OCT-15 16:27:44","09-NOV-15 17:27:44","10-DEC-15 19:27:44")
+  val i = Random.nextInt((xs.length - 1 - 0) + 1) + 0
+  xs(i)
+}
+
+val m = Map(
+  "userId" -> JsonString(8),
+  "currencyFrom" -> JsonString(3, f1),       // use custom generation strategy
+  "currencyTo" -> JsonString(3, f2),         // use custom generation strategy
+  "amountSell" -> JsonDouble(250, 25000, 2),
+  "amountBuy" -> JsonDouble(250, 25000, 2),
+  "rate" -> JsonDouble(0, 1, 4),
+  "timePlaced" -> JsonString(18, f4),       // use custom generation strategy
+  "originatingCountry" -> JsonString(2, f3) // use custom generation strategy
+)
+----
+
+Now that our JSON structure is defined, the JSON web service can be tested.
+
+----
+// if a different content type is required, it can overridden
+// override lazy val contentType = `application/json`
+
+// if a custom response evaluator is required, we can override the
+// default defined in the JsonApiRequestor trait
+override lazy val responseEvaluator = (res: HttpResponse) => {
+  val isCodeValid = res.status == StatusCodes.OK
+  val isResponseValid: Boolean = {
+    // regex to check that the response contains a valid MongoDB object id
+    "^[a-f\\d]{24}$".r findFirstIn res.entity.asString match {
+	  case Some(_) => true
+	  case None => false
+    }
+  }
+  if (isCodeValid && isResponseValid) true else false
+})
+
+// this will make 50 unique requests to the defined web service using the Post http method.
+// given that we have overridden responseEvaluator, this function will be used to
+// evaluate the responses from the web service. If an evaluation fails, an AssertionError 
+// will be thrown
+fireAndEvaluateResponse(Put("http://mywebservice/apiroute"), 50, jsonStructure)
+----
+
+== Shutting down the ActorSystem
+
+Internally, `json-randomizer` uses http://spray.io/documentation/1.2.2/spray-client/[spray-client] to make http requests. Spray-client uses an Akka ActorSystem which needs to be stopped following the completion of the API requests.
+
+Given that the API requests are made in an asynchronous manner, a `TerminatorActor`is included that can be queried to determine when the API requests have completed.
+
+The following code should be added to an appropriate position within your class (at the end of a normal class or in an after hook for a test class).
+
+----
+import scala.concurrent.duration._
+// sleep this thread to give the actor system, 
+// started by JsonApiRequestor, a chance to fire up
+Thread.sleep(3000L)
+
+// grab a reference to the TerminatorActor
+val terminator = system.actorSelection("/user/terminator")
+
+// define an implicit Timeout value, required by the ask pattern Future
+implicit val timeout = Timeout(5 seconds)
+
+/**
+ * Checks if the API request set has completed.
+ * If completed: shut down the ActorSystem
+ * if not completed: sleep the Thread before asking the TerminatorActor again.
+ *
+ * @param b true means the API set has completed, false means that the API set has not completed
+ * @param sha1 the SHA-1 hash that represents the API request set
+ * @return Unit
+ */
+def checkTerminate(b: Boolean, sha1: String): Unit = {
+  b match {
+	case true => {
+	  log.debug("ActorSystem can be shutdown")
+	  system.actorSelection("/user/*") ! PoisonPill
+	  system.shutdown
+	}
+	case false => {
+	  log.debug("ActorSystem can not be shutdown")
+	  Thread.sleep(3000L) // sleep the thread before asking again
+	  val future = terminator ? Terminator.AskTerminate(sha1)
+	  val result = Await.result(future, 5 seconds).asInstanceOf[Boolean]
+	  log.debug("Terimator.AskTerminate response is: " + result)
+	  checkTerminate(result, sha1)
+	}
+  }
+}
+// call checkTerminate with initial values
+checkTerminate(false, test1Sha)
+----
+
+
