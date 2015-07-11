@@ -211,7 +211,7 @@ The following JsonDataTypes support a custom generation strategy
 
 In order to describe how `json-randomizer` can be used to support custom scenarios, we will examine how it was used to test https://github.com/damianmcdonald/currencytrade-spray[currencytrade-spray].
 
-The full test class can be viewed at *TODO:* Add link to JsonApiRequestorTest
+The full test class can be viewed at https://github.com/damianmcdonald/json-randomizer/blob/master/src/test/scala/com/github/damianmcdonald/jsonrandomizer/JsonApiRequestorTest.scala[JsonApiRequestorTest.scala].
 
 The JSON structured required:
 
