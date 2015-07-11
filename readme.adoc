@@ -154,7 +154,7 @@ For certain scenarios, the default usage of `json-randomizer` will not be suffic
 In most cases you will need to:
 
 * generate JSON values according to a custom strategy
-* evaluate web service response according to a custom strategy
+* evaluate web service responses according to a custom strategy
 
 The following JsonDataTypes support a custom generation strategy
 
@@ -188,7 +188,8 @@ The following JsonDataTypes support a custom generation strategy
 |
 ----
 (x: Long, y: Long) => {
-  (x + (Random.nextDouble() * (y - x))).toLong
+  (x + (Random.nextDouble() *
+              (y - x))).toLong
 }
 ----
 |JsonDouble 
@@ -196,8 +197,12 @@ The following JsonDataTypes support a custom generation strategy
 |
 ----
 (x: Int, y: Int, z: Int) => {
-  val double = (x + (y - x)) * Random.nextDouble
-  BigDecimal(double).setScale(z, BigDecimal.RoundingMode.CEILING).toDouble
+  val double = (x + (y - x)) *
+              Random.nextDouble
+
+  BigDecimal(double).setScale(
+    z, BigDecimal.RoundingMode.CEILING
+   ).toDouble
 }
 ----
 |===
@@ -309,7 +314,7 @@ fireAndEvaluateResponse(Put("http://mywebservice/apiroute"), 50, jsonStructure)
 
 Internally, `json-randomizer` uses http://spray.io/documentation/1.2.2/spray-client/[spray-client] to make http requests. Spray-client uses an Akka ActorSystem which needs to be stopped following the completion of the API requests.
 
-Given that the API requests are made in an asynchronous manner, a `TerminatorActor`is included that can be queried to determine when the API requests have completed.
+Given that the API requests are made in an asynchronous manner, a `TerminatorActor` is included that can be queried to determine when the API requests have completed.
 
 The following code should be added to an appropriate position within your class (at the end of a normal class or in an after hook for a test class).
 
