@@ -14,15 +14,11 @@
  * limitations under the License.
  */
 
-package com.github.damianmcdonald.jsonrandomizer.actors
+package com.github.damianmcdonald.jsonrandomizer
 
 import scala.concurrent.Await
 import org.scalatest.BeforeAndAfter
 import org.scalatest.FunSpec
-import com.github.damianmcdonald.jsonrandomizer.JsonApiRequestor
-import com.github.damianmcdonald.jsonrandomizer.JsonData
-import com.github.damianmcdonald.jsonrandomizer.JsonDouble
-import com.github.damianmcdonald.jsonrandomizer.JsonString
 import akka.pattern.ask
 import akka.util.Timeout
 import spray.client.pipelining.Post
@@ -30,6 +26,7 @@ import spray.http.HttpResponse
 import spray.http.StatusCodes
 import akka.actor.PoisonPill
 import com.github.damianmcdonald.jsonrandomizer.TestValues._
+import com.github.damianmcdonald.jsonrandomizer.actors.Terminator
 
 class JsonApiRequestorTest extends FunSpec with BeforeAndAfter with JsonApiRequestor with JsonData {
   // SLF4JLogging
