@@ -4,7 +4,7 @@ image:https://travis-ci.org/damianmcdonald/json-randomizer.svg?branch=master["Bu
 
 `json-randomizer` is a http://www.scala-lang.org/[Scala] library that generates random values for structured JSON.
 
-It is intended to be used to performance and load test JSON web services. In a few shorts steps you can define your JSON structure and then fire thousands of unique JSON requests at your API.
+It is intended to be used to performance and load test JSON web services. In a few short steps you can define your JSON structure and then fire thousands of unique JSON requests at your API.
 
 `json-randomizer` can generate random values for the following JSON data types:
 
