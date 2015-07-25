@@ -16,13 +16,13 @@
 
 package com.github.damianmcdonald.jsonrandomizer
 
-import scala.util.{ Success, Failure }
-import akka.actor.ActorSystem
-import spray.http._
+import akka.actor.{ ActorSystem, Props }
+import com.github.damianmcdonald.jsonrandomizer.actors._
 import spray.client.pipelining._
 import spray.http.MediaTypes._
-import akka.actor.Props
-import com.github.damianmcdonald.jsonrandomizer.actors._
+import spray.http._
+
+import scala.util.{ Failure, Success }
 
 /**
  * Mixin that provides the ability to send multiple, simultaneous API requests
@@ -168,7 +168,6 @@ trait JsonApiRequestor extends JsonRandomizer {
       // handle result/failure
       response.onComplete {
         case Success(response) => {
-          import scala.concurrent.duration._
           log.debug("Request completed with response: " + response.toString)
           assert(f(response), "The server returned an invalid response")
           evaluatorActor ! Evaluator.Success(sha1, max)

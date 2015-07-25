@@ -16,9 +16,7 @@
 
 package com.github.damianmcdonald.jsonrandomizer.actors
 
-import akka.actor.Actor
-import akka.actor.ActorLogging
-import akka.actor.actorRef2Scala
+import akka.actor.{ Actor, ActorLogging, actorRef2Scala }
 
 /**
  * Object defining the messages that are evaluated in

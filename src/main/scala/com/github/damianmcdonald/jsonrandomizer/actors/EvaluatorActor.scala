@@ -16,8 +16,7 @@
 
 package com.github.damianmcdonald.jsonrandomizer.actors
 
-import akka.actor.Actor
-import akka.actor.ActorLogging
+import akka.actor.{ Actor, ActorLogging }
 import akka.actor.ActorSelection.toScala
 
 /**

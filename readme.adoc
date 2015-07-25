@@ -1,3 +1,5 @@
+:source-highlighter: coderay
+
 = json-randomizer
 
 image:https://travis-ci.org/damianmcdonald/json-randomizer.svg?branch=master["Build Status", link="https://travis-ci.org/damianmcdonald/json-randomizer"]
@@ -23,7 +25,7 @@ The library was built using the following toolchain:
 * http://www.scala-lang.org/download/all.html[Scala 2.11.6]
 * http://www.scala-sbt.org/download.html[SBT 0.13.8]
 
-The library has also been built against the OpenJDK but is less thoroughly tested so in general your mileage may vary if you attempt to use the library with versions different than the ones specified above.
+The library has also been built against the `OpenJDK 1.8` but is less thoroughly tested so in general your mileage may vary if you attempt to use the library with versions different than the ones specified above.
 
 == Adding the library
 
@@ -31,20 +33,31 @@ The first step is to add `json-randomizer` to you project.
 
 === Maven dependency
 
-	// to be added
+[source,xml]
+----
+<dependency>
+    <groupId>com.github.damianmcdonald</groupId>
+    <artifactId>json-randomizer_2.11</artifactId>
+    <version>0.1</version>
+</dependency>
+----
 	
 === SBT dependency
 
-	// to be added
+[source,scala]
+----
+libraryDependencies += "com.github.damianmcdonald" % "json-randomizer_2.11" % "0.1"
+----
 	
 === Jar file
 
-	// to be added
+If you prefer to go old-school and manually add the jar file to your project, you can grab it http://search.maven.org/remotecontent?filepath=com/github/damianmcdonald/json-randomizer_2.11/0.1/json-randomizer_2.11-0.1.jar[here]
 
 == Usage
 
 Begin by mixing in the `JsonApiRequestor` trait. This also includes the `JsonRandomizer` trait and will allow you to both generate random values for your JSON structures and test them against your JSON web services.
 
+[source,scala]
 ----
 import com.github.damianmcdonald.jsonrandomizer.JsonApiRequestor
 import com.github.damianmcdonald.jsonrandomizer.JsonDouble
@@ -61,6 +74,7 @@ The next step is to define your JSON structure.
 
 To put this is in a more real-world context, let's assume that you want to generate a randomized version of the JSON structure below:
 
+[source,json]
 ----
 {
     "item:id": "X-Wing",    // String data type
@@ -72,6 +86,7 @@ To put this is in a more real-world context, let's assume that you want to gener
 
 We can create the example above as follows:
 
+[source,scala]
 ----
 val jsonStructure = Map(
   "item_id" -> JsonString(10),
@@ -89,6 +104,7 @@ The `String` values are the id's of your JSON.
 
 The `JsonDataType` will be a sub type that represents the type of JSON data that you wish to randomize.
 
+[source,scala]
 ----
 // Random String with a length of 10
 JsonString(10) 
@@ -121,6 +137,7 @@ JsonObject(Map(
 
 Now that the JSON structure is defined, a web service can be tested as follows:
 
+[source,scala]
 ----
 import com.github.damianmcdonald.jsonrandomizer.JsonApiRequestor
 import com.github.damianmcdonald.jsonrandomizer.JsonBoolean
@@ -166,7 +183,9 @@ The following JsonDataTypes support a custom generation strategy
 
 |JsonString
 |(Int) => String
-|----
+|
+[source,scala]
+----
 (length: Int) => {
   val x = Random.alphanumeric
   x take max mkString ("")
@@ -175,12 +194,15 @@ The following JsonDataTypes support a custom generation strategy
 |JsonBoolean
 |() => Boolean
 |
+[source,scala]
 ----
 () => Boolean = Random.nextBoolean
 ----
 |JsonInt 
 |(Int, Int) => Int
-|----
+|
+[source,scala]
+----
 (x: Int, y: Int) => {
   Random.nextInt((y - x) + 1) + x
 }
@@ -188,6 +210,7 @@ The following JsonDataTypes support a custom generation strategy
 |JsonLong 
 |(Long, Long) => Long
 |
+[source,scala]
 ----
 (x: Long, y: Long) => {
   (x + (Random.nextDouble() *
@@ -197,6 +220,7 @@ The following JsonDataTypes support a custom generation strategy
 |JsonDouble 
 |(Int, Int, Int) => Double
 |
+[source,scala]
 ----
 (x: Int, y: Int, z: Int) => {
   val double = (x + (y - x)) *
@@ -215,6 +239,7 @@ The full test class can be viewed at https://github.com/damianmcdonald/json-rand
 
 The JSON structured required:
 
+[source,json]
 ----
 {
     "userId": "134256",
@@ -236,6 +261,7 @@ The JSON fields, `currencyForm`, `currencyTo`, `timePlaced` and `originatingCoun
 
 This JSON structure was defined as follows:
 
+[source,scala]
 ----
 // define a custom generation strategy for the currencyFrom field
 val f1 = (max: Int) => {
@@ -287,6 +313,7 @@ val m = Map(
 
 Now that our JSON structure is defined, the JSON web service can be tested.
 
+[source,scala]
 ----
 // if a different content type is required, it can overridden
 // override lazy val contentType = `application/json`
@@ -320,6 +347,7 @@ Given that the API requests are made in an asynchronous manner, a `TerminatorAct
 
 The following code should be added to an appropriate position within your class (at the end of a normal class or in an after hook for a test class).
 
+[source,scala]
 ----
 import scala.concurrent.duration._
 // sleep this thread to give the actor system, 

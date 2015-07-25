@@ -16,8 +16,8 @@
 
 package com.github.damianmcdonald.jsonrandomizer
 
-import scala.util.Random
 import scala.annotation.tailrec
+import scala.util.Random
 
 /** Generic Json data type */
 sealed trait JsonDataType

@@ -16,10 +16,9 @@
 
 package com.github.damianmcdonald.jsonrandomizer
 
-import org.scalatest.FunSpec
-import net.liftweb.json._
-import scala.annotation.tailrec
 import com.github.damianmcdonald.jsonrandomizer.TestValues._
+import net.liftweb.json._
+import org.scalatest.FunSpec
 
 class JsonRandomizerComplexTypesTest extends FunSpec with JsonRandomizer with JsonData {
 
