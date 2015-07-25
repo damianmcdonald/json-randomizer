@@ -29,7 +29,7 @@ The library has also been built against the `OpenJDK 1.8` but is less thoroughly
 
 == Adding the library
 
-The first step is to add `json-randomizer` to you project.
+The first step is to add `json-randomizer` to your project.
 
 === Maven dependency
 
@@ -77,14 +77,14 @@ To put this is in a more real-world context, let's assume that you want to gener
 [source,json]
 ----
 {
-    "item:id": "X-Wing",    // String data type
-    "in_stock": true,       // Boolean data type
-    "price": 4567.31,       // Double data type
-    "quantity": 23          // Int data type
+    "item:id": "X-Wing",
+    "in_stock": true,
+    "price": 4567.31,
+    "quantity": 23
 }
 ----
 
-We can create the example above as follows:
+We can create this example as follows:
 
 [source,scala]
 ----
@@ -102,7 +102,7 @@ The JSON structure is defined in a Map that contains a key-value pairing of `Str
 
 The `String` values are the id's of your JSON.
 
-The `JsonDataType` will be a sub type that represents the type of JSON data that you wish to randomize.
+The `JsonDataType` will be a sub type (examples shown below) that represents the type of JSON data that you wish to randomize.
 
 [source,scala]
 ----
@@ -345,7 +345,7 @@ Internally, `json-randomizer` uses http://spray.io/documentation/1.2.2/spray-cli
 
 Given that the API requests are made in an asynchronous manner, a `TerminatorActor` is included that can be queried to determine when the API requests have completed.
 
-The following code should be added to an appropriate position within your class (at the end of a normal class or in an after hook for a test class).
+The following code should be added to an appropriate position within your class (at the end of a class or in an _after_ hook for a test class).
 
 [source,scala]
 ----
