@@ -51,7 +51,7 @@ libraryDependencies += "com.github.damianmcdonald" % "json-randomizer_2.11" % "0
 	
 === Jar file
 
-If you prefer to go old-school and manually add the jar file to your project, you can grab it http://search.maven.org/remotecontent?filepath=com/github/damianmcdonald/json-randomizer_2.11/0.1/json-randomizer_2.11-0.1.jar[here]
+If you prefer to go old-school and manually add the jar file to your project, you can grab it http://central.maven.org/maven2/com/github/damianmcdonald/json-randomizer_2.11/0.1/json-randomizer_2.11-0.1.jar[here]
 
 == Usage
 
