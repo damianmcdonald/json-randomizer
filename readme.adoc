@@ -2,7 +2,7 @@
 
 = json-randomizer
 
-image:https://travis-ci.org/damianmcdonald/json-randomizer.svg?branch=master["Build Status", link="https://travis-ci.org/damianmcdonald/json-randomizer"]
+image:https://travis-ci.org/damianmcdonald/currencytrade-spray.svg?branch=master["Build Status", link="https://travis-ci.org/damianmcdonald/currencytrade-spray"] image:https://maven-badges.herokuapp.com/maven-central/com.github.damianmcdonald/json-randomizer_2.11/badge.svg["Maven Central", link="https://maven-badges.herokuapp.com/maven-central/com.github.damianmcdonald/json-randomizer_2.11"] image:https://go-shields.herokuapp.com/license-apache2-blue.png["License Apache2", link="http://www.apache.org/licenses/LICENSE-2.0"]
 
 `json-randomizer` is a http://www.scala-lang.org/[Scala] library that generates random values for structured JSON.
 
